@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Post;
 use App\Category;
+use App\Tag;
 
 class PostController extends Controller
 {
@@ -28,8 +29,9 @@ class PostController extends Controller
      */
     public function create()
     {
+        $tags = Tag::all();
         $categories = Category::all();
-        return view('admin.posts.create', compact('categories'));
+        return view('admin.posts.create', compact('categories','tags'));
     }
 
     /**
@@ -61,6 +63,10 @@ class PostController extends Controller
         $newPost->fill($data);
         $newPost->save();
 
+        if(array_key_exists('tags',$data)){
+            $newPost->tags()->attach($data['tags']);
+        }
+
         return redirect()->route('admin.posts.index')->with('crea','post creato con successo. Id post:' .$newPost->id);
     }
 
@@ -72,8 +78,9 @@ class PostController extends Controller
      */
     public function show($slug)
     {
+        $tags = Tag::all();
         $post = Post::where('slug', $slug)->first();
-        return view('admin.posts.show', compact('post'));
+        return view('admin.posts.show', compact('post','tags'));
     }
 
     /**
@@ -84,8 +91,9 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
+        $tags = Tag::all();
         $categories = Category::all();
-        return view('admin.posts.edit', compact('post','categories'));
+        return view('admin.posts.edit', compact('post','categories','tags'));
     }
 
     /**
@@ -117,6 +125,10 @@ class PostController extends Controller
             $data['slug'] = $slug;
         }
         $post->update($data);
+
+        if(array_key_exists('tags',$data)){
+            $post->tags()->sync($data['tags']);
+        }
 
         return redirect()->route('admin.posts.index')->with('modifica','post modificato con successo. Id post:' .$post->id);
     }

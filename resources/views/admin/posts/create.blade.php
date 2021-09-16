@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<form action="{{ route('admin.posts.store')}}" method="post">
+<form action="{{ route('admin.posts.store')}}" method="post" class="container">
     @csrf
   <div class="mb-3">
     <label for="titolo" class="form-label">titolo</label>
@@ -17,6 +17,15 @@
       @endforeach
     </select>
     @error('category_id') <div class="btn btn-danger">{{ $message }}</div> @enderror
+  </div>
+  <div class="mb-3">
+    <h5>tags</h5>
+    <div>
+      @foreach($tags as $tag)
+      <input type="checkbox" class="form-controll" id="{{ $tag->id }}" value="{{ $tag->id }}" name="tags[]" @if(in_array($tag->id, old('tags', []))) checked @endif >
+      <label class="form-label btn" for="{{ $tag->id }}">{{ $tag->name }}</label>
+      @endforeach
+    </div>
   </div>
   <div class="mb-3">
     <label for="contenuto" class="form-label">contenuto</label>
